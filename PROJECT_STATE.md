@@ -12,24 +12,28 @@
 ### 2026-06-20 — Session 1
 - Explored Strongman+ codebase for design/stack context
 - Configured Claude Code permissions (bypassPermissions already set globally; added additionalDirectories for cookbook and strongman_plus)
-- Scaffolded blank Expo project via `npx create-expo-app@latest`
+- Scaffolded blank Expo project via `npx create-expo-app@latest` (Expo 56, RN 0.85, React 19)
 - Created GitHub repo: https://github.com/thechristobal/cookbook
-- Created PROJECT_STATE.md and TODO.md
-- **Status:** Repo initialized, nothing built yet — next session starts at CRUD recipe screen implementation
+- Built full CRUD MVP: Auth, RecipeList, RecipeDetail, RecipeForm screens
+- Built ThemeContext (light/dark), AuthContext, RecipeContext
+- Built GlassCard and RecipeCard components with glassmorphism (web backdrop-filter)
+- Created Supabase SQL migration (001_cookbook_tables.sql) — needs to be run manually in Supabase SQL editor
+- Web build verified clean (681 modules, no errors)
+- Pushed to GitHub
 
 ---
 
 ## Where We Left Off
 
-Project is scaffolded (blank Expo app) and pushed to GitHub. No screens built yet.
+Full CRUD MVP is built and pushed. **One manual step needed:** run `supabase/migrations/001_cookbook_tables.sql` in the Supabase SQL editor to create the `recipes`, `recipe_collaborators`, and `user_saved_recipes` tables.
 
 **Next steps:**
-1. Add Supabase client (reuse existing Strongman+ project — new tables only)
-2. Build Auth screen (reuse pattern from Strongman+)
-3. Build Recipe List screen (home)
-4. Build Recipe Detail / View screen
-5. Build Create / Edit Recipe screen
-6. Wire up CRUD to Supabase
+1. Run the SQL migration in Supabase
+2. Deploy to Vercel (connect GitHub repo → auto-deploy)
+3. Test auth + CRUD end-to-end in browser
+4. Add sign-out button to RecipeList header
+5. Polish: loading states, error toasts, swipe-to-delete on list
+6. Consider adding profile screen / account management
 
 ---
 
@@ -47,3 +51,4 @@ Project is scaffolded (blank Expo app) and pushed to GitHub. No screens built ye
 | Date | Change |
 |------|--------|
 | 2026-06-20 | Project created; Expo scaffold; GitHub repo created |
+| 2026-06-20 | Full CRUD MVP built — all screens, navigation, Supabase client, glassmorphism theme, SQL migration |
