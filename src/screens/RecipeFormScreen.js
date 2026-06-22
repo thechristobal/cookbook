@@ -7,6 +7,10 @@ import { useTheme } from '../contexts/ThemeContext';
 import { useRecipes } from '../contexts/RecipeContext';
 import GlassCard from '../components/GlassCard';
 
+const BC = 'BarlowCondensed_700Bold';
+const BC_SB = 'BarlowCondensed_600SemiBold';
+const BC_REG = 'BarlowCondensed_400Regular';
+
 const emptyIngredient = () => ({ name: '', amount: '', unit: '' });
 const emptyStep = () => ({ text: '' });
 
@@ -71,9 +75,9 @@ export default function RecipeFormScreen({ route, navigation }) {
     if (result.error) { setError(result.error.message ?? 'Save failed.'); return; }
 
     if (isEdit) {
-      navigation.navigate('RecipeDetail', { recipe: result.data, updated: result.data });
+      navigation.replace('RecipeDetail', { recipe: result.data, updated: result.data });
     } else {
-      navigation.navigate('RecipeDetail', { recipe: result.data });
+      navigation.replace('RecipeDetail', { recipe: result.data });
     }
   }
 
@@ -89,15 +93,15 @@ export default function RecipeFormScreen({ route, navigation }) {
         Platform.OS === 'web' ? { backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)' } : {},
       ]}>
         <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backBtn}>
-          <Text style={[styles.backText, { color: theme.accentBg }]}>Cancel</Text>
+          <Text style={[styles.backText, { color: theme.accentBg, fontFamily: BC_SB }]}>Cancel</Text>
         </TouchableOpacity>
-        <Text style={[styles.headerTitle, { color: theme.textPrimary }]}>
+        <Text style={[styles.headerTitle, { color: theme.textPrimary, fontFamily: BC }]}>
           {isEdit ? 'Edit Recipe' : 'New Recipe'}
         </Text>
         <TouchableOpacity onPress={handleSave} disabled={saving} style={styles.saveBtn}>
           {saving
             ? <ActivityIndicator color={theme.accentBg} size="small" />
-            : <Text style={[styles.saveText, { color: theme.accentBg }]}>Save</Text>}
+            : <Text style={[styles.saveText, { color: theme.accentBg, fontFamily: BC }]}>Save</Text>}
         </TouchableOpacity>
       </View>
 
