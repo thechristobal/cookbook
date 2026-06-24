@@ -1,11 +1,14 @@
 import React, { useState } from 'react';
 import {
   View, Text, TextInput, TouchableOpacity, ScrollView,
-  StyleSheet, Platform, ActivityIndicator,
+  StyleSheet, Platform, ActivityIndicator, Image,
 } from 'react-native';
+import * as ImagePicker from 'expo-image-picker';
 import { useTheme } from '../contexts/ThemeContext';
 import { useRecipes } from '../contexts/RecipeContext';
+import { supabase } from '../lib/supabase';
 import GlassCard from '../components/GlassCard';
+import TagPicker from '../components/TagPicker';
 
 const BC = 'BarlowCondensed_700Bold';
 const BC_SB = 'BarlowCondensed_600SemiBold';
@@ -25,15 +28,43 @@ export default function RecipeFormScreen({ route, navigation }) {
   const [servings, setServings] = useState(String(existing?.servings ?? ''));
   const [prepTime, setPrepTime] = useState(String(existing?.prep_time_minutes ?? ''));
   const [cookTime, setCookTime] = useState(String(existing?.cook_time_minutes ?? ''));
-  const [tags, setTags] = useState(existing?.tags?.join(', ') ?? '');
+  const [tags, setTags] = useState(existing?.tags ?? []);
   const [ingredients, setIngredients] = useState(
     existing?.ingredients?.length ? existing.ingredients : [emptyIngredient()]
   );
   const [steps, setSteps] = useState(
     existing?.steps?.length ? existing.steps : [emptyStep()]
   );
+  const [imageUri, setImageUri] = useState(existing?.image_url ?? null);
+  const [imageChanged, setImageChanged] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
+
+  async function pickImage() {
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ['images'],
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 0.85,
+    });
+    if (!result.canceled) {
+      setImageUri(result.assets[0].uri);
+      setImageChanged(true);
+    }
+  }
+
+  async function uploadImage(recipeId, uri) {
+    const ext = uri.split('.').pop()?.split('?')[0] || 'jpg';
+    const path = `${recipeId}.${ext}`;
+    const response = await fetch(uri);
+    const blob = await response.blob();
+    const { error } = await supabase.storage
+      .from('recipe-images')
+      .upload(path, blob, { upsert: true, contentType: blob.type || 'image/jpeg' });
+    if (error) return null;
+    const { data } = supabase.storage.from('recipe-images').getPublicUrl(path);
+    return data.publicUrl;
+  }
 
   function updateIngredient(i, field, val) {
     setIngredients(prev => prev.map((ing, idx) => idx === i ? { ...ing, [field]: val } : ing));
@@ -59,7 +90,7 @@ export default function RecipeFormScreen({ route, navigation }) {
       servings: parseInt(servings) || null,
       prep_time_minutes: parseInt(prepTime) || null,
       cook_time_minutes: parseInt(cookTime) || null,
-      tags: tags.split(',').map(t => t.trim()).filter(Boolean),
+      tags,
       ingredients: ingredients.filter(i => i.name.trim()),
       steps: steps.filter(s => s.text.trim()),
     };
@@ -67,8 +98,16 @@ export default function RecipeFormScreen({ route, navigation }) {
     let result;
     if (isEdit) {
       result = await updateRecipe(existing.id, payload);
+      if (!result.error && imageChanged && imageUri) {
+        const url = await uploadImage(existing.id, imageUri);
+        if (url) result = await updateRecipe(existing.id, { image_url: url });
+      }
     } else {
       result = await createRecipe(payload);
+      if (!result.error && imageChanged && imageUri) {
+        const url = await uploadImage(result.data.id, imageUri);
+        if (url) result = await updateRecipe(result.data.id, { image_url: url });
+      }
     }
 
     setSaving(false);
@@ -108,6 +147,27 @@ export default function RecipeFormScreen({ route, navigation }) {
       <ScrollView contentContainerStyle={styles.scroll} keyboardShouldPersistTaps="handled">
         {error ? <Text style={[styles.error, { color: theme.danger }]}>{error}</Text> : null}
 
+        {/* Photo */}
+        <TouchableOpacity
+          onPress={pickImage}
+          activeOpacity={0.85}
+          style={[styles.imagePicker, { backgroundColor: theme.inputBg, borderColor: theme.inputBorder }]}
+        >
+          {imageUri ? (
+            <>
+              <Image source={{ uri: imageUri }} style={styles.imagePreview} resizeMode="cover" />
+              <View style={styles.imageOverlay}>
+                <Text style={[styles.imageOverlayText, { fontFamily: BC_SB }]}>Change Photo</Text>
+              </View>
+            </>
+          ) : (
+            <View style={styles.imagePlaceholder}>
+              <Text style={styles.imageIcon}>📷</Text>
+              <Text style={[styles.imagePickerText, { color: theme.textSecondary, fontFamily: BC_REG }]}>Add a photo</Text>
+            </View>
+          )}
+        </TouchableOpacity>
+
         {/* Basics */}
         <GlassCard style={styles.section}>
           <Text style={labelStyle}>Title *</Text>
@@ -127,16 +187,15 @@ export default function RecipeFormScreen({ route, navigation }) {
             </View>
           </View>
 
-          <View style={styles.row}>
-            <View style={styles.half}>
-              <Text style={labelStyle}>Cook (min)</Text>
-              <TextInput style={inputStyle} value={cookTime} onChangeText={setCookTime} placeholder="30" placeholderTextColor={theme.textSecondary} keyboardType="numeric" />
-            </View>
-            <View style={styles.half}>
-              <Text style={labelStyle}>Tags (comma-separated)</Text>
-              <TextInput style={inputStyle} value={tags} onChangeText={setTags} placeholder="chicken, dinner..." placeholderTextColor={theme.textSecondary} />
-            </View>
+          <View style={styles.half}>
+            <Text style={labelStyle}>Cook (min)</Text>
+            <TextInput style={inputStyle} value={cookTime} onChangeText={setCookTime} placeholder="30" placeholderTextColor={theme.textSecondary} keyboardType="numeric" />
           </View>
+        </GlassCard>
+
+        <GlassCard style={styles.section}>
+          <Text style={[styles.sectionTitle, { color: theme.textPrimary, fontFamily: BC }]}>Tags</Text>
+          <TagPicker tags={tags} onChange={setTags} recipeTitle={title} />
         </GlassCard>
 
         {/* Ingredients */}
@@ -231,7 +290,28 @@ const styles = StyleSheet.create({
   saveText: { fontSize: 15, fontWeight: '600' },
   scroll: { padding: 16, paddingBottom: 60 },
   error: { fontSize: 13, marginBottom: 12, paddingHorizontal: 4 },
+  imagePicker: {
+    height: 200,
+    borderRadius: 16,
+    borderWidth: 1,
+    borderStyle: 'dashed',
+    marginBottom: 12,
+    overflow: 'hidden',
+  },
+  imagePreview: { width: '100%', height: '100%' },
+  imagePlaceholder: { flex: 1, alignItems: 'center', justifyContent: 'center', gap: 8 },
+  imageIcon: { fontSize: 36 },
+  imagePickerText: { fontSize: 15, letterSpacing: 0.3 },
+  imageOverlay: {
+    position: 'absolute',
+    bottom: 0, left: 0, right: 0,
+    backgroundColor: 'rgba(0,0,0,0.4)',
+    padding: 12,
+    alignItems: 'center',
+  },
+  imageOverlayText: { color: '#fff', fontSize: 14, letterSpacing: 0.5 },
   section: { marginBottom: 16 },
+  sectionTitle: { fontSize: 18, letterSpacing: 0.5, marginBottom: 12 },
   sectionTitle: { fontSize: 16, fontWeight: '700', marginBottom: 12 },
   label: { fontSize: 12, fontWeight: '500', marginBottom: 4, letterSpacing: 0.3 },
   input: {

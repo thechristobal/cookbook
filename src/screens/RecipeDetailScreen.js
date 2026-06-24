@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import {
   View, Text, ScrollView, TouchableOpacity, StyleSheet,
-  Platform, Alert,
+  Platform, Alert, Image,
 } from 'react-native';
 import { useTheme } from '../contexts/ThemeContext';
 import { useRecipes } from '../contexts/RecipeContext';
@@ -76,6 +76,16 @@ export default function RecipeDetailScreen({ route, navigation }) {
       } : { backgroundColor: accent + '40' }]} />
 
       <ScrollView contentContainerStyle={styles.scroll}>
+        {/* Hero image */}
+        {recipe.image_url && (
+          <View style={styles.heroImage}>
+            <Image source={{ uri: recipe.image_url }} style={styles.heroImg} resizeMode="cover" />
+            <View style={[styles.heroGradient, Platform.OS === 'web' ? {
+              background: `linear-gradient(to bottom, transparent 40%, ${theme.pageBg} 100%)`,
+            } : { backgroundColor: 'transparent' }]} />
+          </View>
+        )}
+
         {/* Title block */}
         <View style={styles.titleBlock}>
           <Text style={[styles.title, { color: theme.textPrimary, fontFamily: BC }]}>{recipe.title}</Text>
@@ -191,8 +201,11 @@ const styles = StyleSheet.create({
   navBtn: { padding: 4 },
   navBtnText: { fontSize: 16, letterSpacing: 0.5 },
   accentLine: { height: 1 },
-  scroll: { padding: 20, paddingBottom: 60 },
-  titleBlock: { marginBottom: 20, gap: 12 },
+  scroll: { paddingBottom: 60 },
+  heroImage: { height: 260, position: 'relative', marginBottom: -20 },
+  heroImg: { width: '100%', height: '100%' },
+  heroGradient: { position: 'absolute', bottom: 0, left: 0, right: 0, height: 120 },
+  titleBlock: { marginBottom: 20, gap: 12, paddingHorizontal: 20, paddingTop: 20 },
   title: { fontSize: 36, letterSpacing: -0.5, lineHeight: 40 },
   description: { fontSize: 15, lineHeight: 23, letterSpacing: 0.2 },
   metaRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
@@ -208,7 +221,7 @@ const styles = StyleSheet.create({
   tags: { flexDirection: 'row', flexWrap: 'wrap', gap: 6 },
   tag: { borderRadius: 20, paddingHorizontal: 12, paddingVertical: 5 },
   tagText: { fontSize: 13, letterSpacing: 0.5 },
-  section: { marginBottom: 16, padding: 20 },
+  section: { marginBottom: 16, padding: 20, marginHorizontal: 20 },
   sectionTitle: { fontSize: 20, letterSpacing: 1, marginBottom: 6 },
   sectionAccent: { height: 2, width: 32, borderRadius: 1, marginBottom: 14 },
   ingredientRow: {
@@ -238,6 +251,7 @@ const styles = StyleSheet.create({
     padding: 14,
     alignItems: 'center',
     marginTop: 8,
+    marginHorizontal: 20,
   },
   deleteBtnText: { fontSize: 15, letterSpacing: 1 },
 });

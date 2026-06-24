@@ -16,18 +16,67 @@ function accentForId(id) {
 
 function tagEmoji(tag) {
   const t = tag.toLowerCase();
+  // Proteins
   if (t.includes('chicken')) return '🍗';
-  if (t.includes('beef') || t.includes('steak')) return '🥩';
-  if (t.includes('pasta') || t.includes('noodle')) return '🍝';
-  if (t.includes('salad')) return '🥗';
-  if (t.includes('soup')) return '🍲';
-  if (t.includes('dessert') || t.includes('cake') || t.includes('sweet')) return '🍰';
-  if (t.includes('breakfast')) return '🍳';
-  if (t.includes('fish') || t.includes('seafood')) return '🐟';
-  if (t.includes('vegan') || t.includes('veggie') || t.includes('vegetarian')) return '🥦';
+  if (t.includes('beef') || t.includes('steak') || t.includes('brisket')) return '🥩';
+  if (t.includes('pork') || t.includes('bacon') || t.includes('ham') || t.includes('ribs')) return '🥓';
+  if (t.includes('lamb')) return '🍖';
+  if (t.includes('fish') || t.includes('salmon') || t.includes('tuna') || t.includes('cod')) return '🐟';
+  if (t.includes('seafood') || t.includes('shrimp') || t.includes('prawn') || t.includes('lobster') || t.includes('crab')) return '🦐';
+  if (t.includes('turkey')) return '🦃';
+  if (t.includes('egg')) return '🥚';
+  // Dishes
+  if (t.includes('pasta') || t.includes('noodle') || t.includes('spaghetti') || t.includes('ramen')) return '🍝';
   if (t.includes('pizza')) return '🍕';
-  if (t.includes('taco') || t.includes('mexican')) return '🌮';
-  if (t.includes('sandwich') || t.includes('burger')) return '🥪';
+  if (t.includes('burger')) return '🍔';
+  if (t.includes('sandwich') || t.includes('sub') || t.includes('wrap')) return '🥪';
+  if (t.includes('taco') || t.includes('burrito') || t.includes('mexican')) return '🌮';
+  if (t.includes('sushi') || t.includes('japanese')) return '🍱';
+  if (t.includes('curry') || t.includes('indian')) return '🍛';
+  if (t.includes('stir fry') || t.includes('stir-fry') || t.includes('chinese')) return '🥘';
+  if (t.includes('soup') || t.includes('stew') || t.includes('chili') || t.includes('chowder')) return '🍲';
+  if (t.includes('salad')) return '🥗';
+  if (t.includes('rice') || t.includes('risotto') || t.includes('fried rice')) return '🍚';
+  if (t.includes('bread') || t.includes('bake') || t.includes('loaf') || t.includes('roll')) return '🍞';
+  if (t.includes('pizza')) return '🍕';
+  if (t.includes('hot dog') || t.includes('hotdog')) return '🌭';
+  if (t.includes('dumpling') || t.includes('gyoza') || t.includes('potsticker')) return '🥟';
+  if (t.includes('kebab') || t.includes('skewer') || t.includes('bbq') || t.includes('grill')) return '🍢';
+  if (t.includes('roast')) return '🍖';
+  // Produce
+  if (t.includes('vegan') || t.includes('veggie') || t.includes('vegetarian') || t.includes('plant')) return '🥦';
+  if (t.includes('mushroom')) return '🍄';
+  if (t.includes('tomato')) return '🍅';
+  if (t.includes('corn')) return '🌽';
+  if (t.includes('avocado')) return '🥑';
+  if (t.includes('potato') || t.includes('fries')) return '🥔';
+  if (t.includes('carrot')) return '🥕';
+  // Meals
+  if (t.includes('breakfast') || t.includes('brunch')) return '🍳';
+  if (t.includes('lunch')) return '🥙';
+  if (t.includes('dinner') || t.includes('supper')) return '🍽️';
+  if (t.includes('snack') || t.includes('appetizer') || t.includes('starter')) return '🧆';
+  if (t.includes('side')) return '🥣';
+  // Drinks & sweet
+  if (t.includes('smoothie') || t.includes('juice') || t.includes('drink') || t.includes('cocktail')) return '🥤';
+  if (t.includes('coffee') || t.includes('espresso') || t.includes('latte')) return '☕';
+  if (t.includes('tea')) return '🍵';
+  if (t.includes('dessert') || t.includes('sweet') || t.includes('pudding') || t.includes('mousse')) return '🍮';
+  if (t.includes('cake') || t.includes('cupcake')) return '🎂';
+  if (t.includes('cookie') || t.includes('biscuit') || t.includes('brownie')) return '🍪';
+  if (t.includes('ice cream') || t.includes('gelato') || t.includes('sorbet')) return '🍦';
+  if (t.includes('pie') || t.includes('tart')) return '🥧';
+  if (t.includes('chocolate')) return '🍫';
+  if (t.includes('candy') || t.includes('sweet')) return '🍬';
+  if (t.includes('pancake') || t.includes('waffle')) return '🧇';
+  // Misc
+  if (t.includes('cheese')) return '🧀';
+  if (t.includes('sauce') || t.includes('dip') || t.includes('dressing')) return '🫙';
+  if (t.includes('slow cooker') || t.includes('crockpot') || t.includes('instant pot')) return '🫕';
+  if (t.includes('air fryer')) return '🍟';
+  if (t.includes('quick') || t.includes('easy') || t.includes('simple') || t.includes('30 min')) return '⚡';
+  if (t.includes('healthy') || t.includes('low carb') || t.includes('keto') || t.includes('paleo')) return '💪';
+  if (t.includes('gluten free') || t.includes('gluten-free')) return '🌾';
   return '🍽️';
 }
 
